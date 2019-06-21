@@ -7,7 +7,7 @@ Navigate to main folder
 Compile with: g++ src\findBeta.cpp -o findBeta  
 Run with: findBeta climbers\name_of_climber_file.txt problems\name_of_problem_file.txt
 
-## Climber and Problem Files
+## Climber and Problem Files:
 
 ### Climber files are formatted as follows:
 
