@@ -19,7 +19,7 @@ wall width_in_m height_in_m angle_to_horizontal
 
 (As of yet, only an angle to the horizontal of 0 is supported)
 
-After the initial line, there needs to be a set of lines of either 0, 1, 2, 3, or 4. Each number represents a 10x10cm area on the wall.  
+After the initial line, there needs to be a set of lines of either 0, 1, 2, 3, or 4. Each number represents a 10x10cm area on the 2D front facing projection of the wall.  
 The meanings of the numbers are as follows:  
 * 0 - empty space on wall.
 * 1 - starting hand hold.
