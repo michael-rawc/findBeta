@@ -1,5 +1,7 @@
 #include <iostream>
 #include <fstream>
+#include <chrono>
+#include <thread>
 #include "QAgent.h"
 #include "Visual.h"
 
@@ -33,11 +35,12 @@ int main(int argc, char * argv[]) {
 
     // Simulation(s) settings
     int agents = 1; // Number of agents to run
-    int episodes = 800; // Number of episodes to run
+    int episodes = 200; // Number of episodes to run
+    int maxAllowedMoves = 1000; // Number of moves allowed before deemed a failure
     int numberOfTests = 50; // Number of tests to perform over the episodes
     int testInterval = (int) episodes / numberOfTests; // Based on ^ do not edit
-    bool visualiseAtEnd = false; // Whether to visualise or not
-    int numberOfVisualisations = 10; // Number of times to show the visualisation
+    bool visualiseAtEnd = true; // Whether to visualise or not
+    int numberOfVisualisations = 100; // Number of times to show the visualisation
 
     // Variables
     vector<vector<int>> allAgentScores;
@@ -67,7 +70,7 @@ int main(int argc, char * argv[]) {
             int numOfMovesForEpisode = 0;
 
             // Loop till simulation terminates
-            while(!qAgent.agent.hasTerminated && numOfMovesForEpisode < 4000) {
+            while(!qAgent.agent.hasTerminated && numOfMovesForEpisode < maxAllowedMoves) {
                 // Store state and actions
                 State state = qAgent.agent.currentState;
                 vector<Action> actions = qAgent.agent.currentPossibleActions;
@@ -115,7 +118,7 @@ int main(int argc, char * argv[]) {
                 int numOfMovesForTest = 0;
 
                 // Loop till simulation terminates
-                while(!qAgent.agent.hasTerminated && numOfMovesForTest < 4000) {
+                while(!qAgent.agent.hasTerminated && numOfMovesForTest < maxAllowedMoves) {
                     // Choose the best action
                     Action chosenAction = qAgent.getBestAction();
 
@@ -132,7 +135,7 @@ int main(int argc, char * argv[]) {
                 else {
                     cout << "\r" << " --test completed(failed in " << numOfMovesForTest << " moves)" << endl;
                     // Add score to vector
-                    thisAgentScores.push_back(4000);
+                    thisAgentScores.push_back(maxAllowedMoves);
                 }
             }
         }
@@ -148,7 +151,7 @@ int main(int argc, char * argv[]) {
             int numOfMovesForBeta = 0;
 
             // Loop till simulation terminates
-            while(!qAgent.agent.hasTerminated && numOfMovesForBeta < 4000) {
+            while(!qAgent.agent.hasTerminated && numOfMovesForBeta < maxAllowedMoves) {
                 // Choose the best action
                 Action chosenAction = qAgent.getBestAction();
                 // Store chosen action
@@ -169,7 +172,7 @@ int main(int argc, char * argv[]) {
             cout << " Agent " << i << ":" << endl;
             cout << "  ";
             for (int j = 0; j < allAgentScores[i].size(); j++) {
-                if (allAgentScores[i][j] != 4000) {
+                if (allAgentScores[i][j] != maxAllowedMoves) {
                     cout << allAgentScores[i][j] << " ";
                 }
                 else {
@@ -210,7 +213,7 @@ int main(int argc, char * argv[]) {
     // Print out chosen beta!
     cout << "--Sequence calculated--" << endl;
     for (int i = 0; i < foundBeta.size(); i++) {
-        cout << " " << i << ". Move ";
+        cout << " " << i+1 << ". Move ";
         if (foundBeta[i].extremity == 0) {
             cout << "left hand ";
         }
@@ -227,31 +230,34 @@ int main(int argc, char * argv[]) {
     }
 
     // Visualise!
-    cout << "--Visualisation of calculated sequence--" << endl;
-    cout << " see visualisation.txt for live updating beta" << endl;
     if (visualiseAtEnd) {
+        cout << "--Visualisation of calculated sequence--" << endl;
+        cout << " see visualisation.txt for live updating beta" << endl;
+
         for (int i = 0; i < numberOfVisualisations; i++) {
+            // Initialise new episode
+            Agent agent = Agent(wall, climber0);
+            // Initialise new visualisation
+            Visual visual = Visual(agent);
 
-        }
-        // Initialise new episode
-        Agent agent = Agent(wall, climber0);
-        // Initialise new visualisation
-        Visual visual = Visual(agent);
+            int numOfMovesForBeta = 0;
 
-        int numOfMovesForBeta = 0;
+            // Loop till simulation terminates
+            while(!agent.hasTerminated && numOfMovesForBeta < maxAllowedMoves) {
+                // Get action from foundBeta
+                Action chosenAction = foundBeta[numOfMovesForBeta];
+                numOfMovesForBeta ++;
 
-        // Loop till simulation terminates
-        while(!agent.hasTerminated && numOfMovesForBeta < 4000) {
-            // Get action from foundBeta
-            Action chosenAction = foundBeta[numOfMovesForBeta];
-            numOfMovesForBeta ++;
+                // Execute action chosen
+                agent.executeAction(chosenAction, false);
+                // Update visualisation
+                visual.updateVisual(agent);
 
-            // Execute action chosen
-            agent.executeAction(chosenAction, false);
-            // Update visualisation
-            visual.updateVisual(agent);
+                // Wait some time inbetween printing moves for clarity (requires c++11)
+                this_thread::sleep_for(chrono::milliseconds(1000));
+            }
 
-            // Wait some time inbetween printing for clarity
+            visual.clear();
         }
     }
 }

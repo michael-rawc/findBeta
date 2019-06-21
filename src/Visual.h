@@ -26,13 +26,24 @@ public:
     }
 
     // Function to update the visualisation.txt.
-    void updateVisual(Agent agent) {
-        climberLocations[0] = agent.climber.leftHand;
-        climberLocations[1] = agent.climber.rightHand;
-        climberLocations[2] = agent.climber.leftFoot;
-        climberLocations[3] = agent.climber.rightFoot;
+    void updateVisual(Agent a) {
+        this->agent = a;
+        this->climberLocations[0] = this->agent.climber.leftHand;
+        this->climberLocations[1] = this->agent.climber.rightHand;
+        this->climberLocations[2] = this->agent.climber.leftFoot;
+        this->climberLocations[3] = this->agent.climber.rightFoot;
 
         printOut();
+    }
+
+    // Function to clear visualisation.txt
+    void clear() {
+        // Setting up ofstream
+        ofstream visualisation;
+        visualisation.open("visualisation.txt");
+        visualisation << endl;
+        // Closing ofstream
+        visualisation.close();
     }
 private:
 
@@ -49,19 +60,19 @@ private:
                 if (grid[j][i].isHold) {
                     if (grid[j][i].location[0] == climberLocations[0][0] && grid[j][i].location[1] == climberLocations[0][1]) {
                         // Left hand is on this hold
-                        currentline += '0';
+                        currentline += 'L';
                     }
                     else if (grid[j][i].location[0] == climberLocations[1][0] && grid[j][i].location[1] == climberLocations[1][1]) {
-                        // Left hand is on this hold
-                        currentline += '1';
+                        // Right hand is on this hold
+                        currentline += 'R';
                     }
                     else if (grid[j][i].location[0] == climberLocations[2][0] && grid[j][i].location[1] == climberLocations[2][1]) {
-                        // Left hand is on this hold
-                        currentline += '2';
+                        // Left foot is on this hold
+                        currentline += 'l';
                     }
                     else if (grid[j][i].location[0] == climberLocations[3][0] && grid[j][i].location[1] == climberLocations[3][1]) {
-                        // Left hand is on this hold
-                        currentline += '3';
+                        // Right foot is on this hold
+                        currentline += 'r';
                     }
                     else {
                         // No extremities on hold, just a hold
