@@ -3,8 +3,9 @@ Bouldering beta calculator using Reinforcement Learning
 
 ## How to use:
 
-Compile with: g++ findBeta.cpp -o findBeta  
-Run with: findBeta name_of_climber_file.txt name_of_problem_file.txt
+Navigate to main folder  
+Compile with: g++ src\findBeta.cpp -o findBeta  
+Run with: findBeta climbers\name_of_climber_file.txt problems\name_of_problem_file.txt
 
 ## Climber and Problem Files
 
@@ -16,11 +17,10 @@ climber weight_in_kg height_in_cm ape_index_as_multiple_of_height
 
 wall width_in_m height_in_m angle_to_horizontal
 
-As of yet, only an angle to the horizontal of 0 is supported.
+(As of yet, only an angle to the horizontal of 0 is supported)
 
 After the initial line, there needs to be a set of lines of either 0, 1, 2, 3, or 4. Each number represents a 10x10cm area on the wall.  
-The meanings of the numbers are as follows:
-
+The meanings of the numbers are as follows:  
 * 0 - empty space on wall.
 * 1 - starting hand hold.
 * 2 - starting foot hold.
